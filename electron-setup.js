@@ -1,8 +1,9 @@
 var fs = require('fs');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
-  templateUrl: 'electron-setup.html',
-  controller: function($window, region) {
+  templateUrl: './electron-setup.html',
+  controller: ['$window', 'region',
+  function($window, region) {
     const ctrl = this;
     $window.document.title = 'dngearsim | SETUP';
 
@@ -102,5 +103,5 @@ angular.module('dnsim').component('dnsimElectronSetup', {
 
     ctrl.validateWorking();
     ctrl.validateGame();
-  }
+  }]
 });

@@ -1,5 +1,5 @@
 angular.module('dnsim').component('electronNav', {
-  templateUrl: 'electron-nav.html',
+  templateUrl: './electron-nav.html',
   controller: [
   '$location','translations','region','itemCategory','saveHelper',
   function($location,translations,region,itemCategory,saveHelper) {

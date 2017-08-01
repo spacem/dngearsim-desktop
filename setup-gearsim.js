@@ -1,4 +1,3 @@
-
 angular.module('dnsim').config(['$locationProvider', dnsimElectronHtml5Mode]);
 function dnsimElectronHtml5Mode ($locationProvider) {
     $locationProvider.html5Mode({
@@ -30,5 +29,4 @@ function configureElectronRoutes($routeProvider) {
     when('/setup', {
       template: '<dnsim-electron-setup></dnsim-electron-setup>',
     })
-
 }

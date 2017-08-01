@@ -1,6 +1,9 @@
+if (require('electron-squirrel-startup')) return;
+
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
+const session = electron.session;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -11,10 +14,37 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+require('electron-debug')({enabled: true});
+
 function createWindow () {
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1024, height: 768})
-  // mainWindow.setMenu(null);
+  mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 768,
+    titleBarStyle: 'hiddenInset',
+    webPreferences: {
+      webSecurity: false,
+     }
+  });
+  mainWindow.setMenu(null);
+
+/*
+  session.defaultSession.webRequest.onBeforeRequest({urls: ['https://*']}, function(details, callback) {
+    var index = details.url.indexOf('images/');
+    if(index >= 0) {
+      var newUrl = 'http://spacem.github.io/dngearsim/' + details.url.substring(index);
+      console.log('redirecting to ' + newUrl);
+      callback({
+        cancel: true,
+        redirectURL: newUrl
+      });
+    }
+    else {
+      callback({});
+    }
+  });
+  */
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
