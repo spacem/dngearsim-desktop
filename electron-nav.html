@@ -1,0 +1,31 @@
+<ul class="nav nav-tabs">
+  <li class="nav-tab nav-{{::action.name}}" ng-repeat="action in $ctrl.getActions() track by $index" ng-if="!$ctrl.noRegion()"> 
+    <a class="list-group-item {{action.extraCss}}" ng-href="{{action.path}}">
+      <span class="glyphicon glyphicon-{{::action.icon}}" ng-if="::action.icon" aria-hidden="true"></span>
+      <dnsim-job-icon size="'50%'" item="action.build.job" small="true"></dnsim-job-icon>
+      &nbsp;
+      <span class="hidden-xs">
+      {{action.name | translate}}
+      </span>
+    </a>
+  </li>
+  <li class="nav-tab nav-about pull-right">
+    <a class="list-group-item" ng-href="about">
+      <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+      <span class="hidden-xs">
+      {{ 'about' | translate }}
+      </span>
+    </a>
+  </li>
+  <li class="nav-tab nav-setup pull-right">
+    <a class="list-group-item" ng-href="setup">
+      <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+      <span class="hidden-xs">
+      {{ 'setup' | translate }}
+      </span>
+    </a>
+  </li>
+</ul>
+<div class="container-fluid sim-error" ng-if="$ctrl.simError">
+  {{simError}}
+</div>

@@ -1,0 +1,15 @@
+{
+  "name": "dngearsim desktop",
+  "version": "1.0.0",
+  "description": "Desktop version of dngearsim",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/spacem/dngearsim-desktop",
+  "author": "spacem",
+  "devDependencies": {
+    "electron": "~1.6.2"
+  },
+  "dependencies": {}
+}
