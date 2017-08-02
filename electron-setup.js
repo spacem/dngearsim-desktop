@@ -1,4 +1,5 @@
-var fs = require('fs');
+const fs = require('fs');
+const {dialog} = require('electron').remote;
 
 angular.module('dnsim').component('dnsimElectronSetup', {
   templateUrl: __dirname + '/electron-setup.html',
@@ -28,7 +29,6 @@ angular.module('dnsim').component('dnsimElectronSetup', {
     }
 
     ctrl.selectFolder = function(folder) {
-      const {dialog} = require('electron').remote
       var selected = dialog.showOpenDialog({
         properties: ['openDirectory'],
         defaultPath: folder
@@ -99,6 +99,10 @@ angular.module('dnsim').component('dnsimElectronSetup', {
       catch(ex) {
         ctrl.dnFolderStatus = ex.message;
       }
+    }
+
+    ctrl.buildFiles = function() {
+      dialog.showMessageBox({message: 'Coming soon!'});
     }
 
     ctrl.validateWorking();
