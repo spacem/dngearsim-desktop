@@ -1,6 +1,3 @@
-if (require('electron-squirrel-startup')) return;
-
-
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
 
