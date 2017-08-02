@@ -3,7 +3,7 @@ function dnsimElectronHtml5Mode ($locationProvider) {
     $locationProvider.html5Mode({
     enabled: true,
     requireBase: false,
-    rewriteLinks: true}).hashPrefix('!');
+    rewriteLinks: true});
 }
 
 angular.module('dnsim').run(['region', dnsimElectronSetPath]);

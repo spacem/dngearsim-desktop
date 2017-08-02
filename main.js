@@ -29,14 +29,13 @@ function createWindow () {
   });
   mainWindow.setMenu(null);
 
-/*
-  session.defaultSession.webRequest.onBeforeRequest({urls: ['https://*']}, function(details, callback) {
-    var index = details.url.indexOf('images/');
-    if(index >= 0) {
-      var newUrl = 'http://spacem.github.io/dngearsim/' + details.url.substring(index);
+  session.defaultSession.webRequest.onBeforeRequest({urls: ['file:/**/images/**']}, function(details, callback) {
+    console.log('checking url ' + details.url);
+    var index = details.url.indexOf('/images');
+    if(index >= 0 && details.url.indexOf('file:') == 0) {
+      var newUrl = 'https://spacem.github.io/dngearsim' + details.url.substring(index);
       console.log('redirecting to ' + newUrl);
       callback({
-        cancel: true,
         redirectURL: newUrl
       });
     }
@@ -44,7 +43,6 @@ function createWindow () {
       callback({});
     }
   });
-  */
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({

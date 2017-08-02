@@ -6,7 +6,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager . --overwrite --asar=false --platform=win32 --arch=ia32 --icon=dngearsim.ico --out=builds --version-string.CompanyName=spacem --version-string.FileDescription=dngearsim --version-string.ProductName=\"Dragon Nest Gear Simulator - Desktop Edition\"",
+    "package": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=dngearsim.ico --out=builds --version-string.CompanyName=spacem --version-string.FileDescription=dngearsim --version-string.ProductName=\"Dragon Nest Gear Simulator - Desktop Edition\"",
     "build": "node build.js"
   },
   "repository": "https://github.com/spacem/dngearsim-desktop",

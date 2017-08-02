@@ -1,7 +1,7 @@
 var fs = require('fs');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
-  templateUrl: './electron-setup.html',
+  templateUrl: __dirname + '/electron-setup.html',
   controller: ['$window', 'region',
   function($window, region) {
     const ctrl = this;
