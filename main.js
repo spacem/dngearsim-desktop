@@ -6,6 +6,7 @@ const Menu = electron.Menu;
 // Module to control application life.
 const app = electron.app
 const session = electron.session;
+const dialog = electron.dialog;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -14,11 +15,14 @@ const url = require('url')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
 
 require('electron-debug')({enabled: true});
 
-function createWindow () {
+function createWindow() {
+  if(mainWindow) {
+    return;
+  }
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1024,
@@ -28,7 +32,6 @@ function createWindow () {
       webSecurity: false,
      }
   });
-  mainWindow.setMenu(null);
 
   session.defaultSession.webRequest.onBeforeRequest({urls: ['file:/**/images/**']}, function(details, callback) {
     // console.log('checking url ' + details.url);
@@ -45,12 +48,7 @@ function createWindow () {
     }
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'dngearsim.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  reload();
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -60,80 +58,64 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null
+    mainWindow = null;
+      app.quit();
   })
+
+  if(win && !win.isDestroyed()) {
+    win.close();  
+  }
+  app.on('window-all-closed', () => {
+    console.log('all closed so quit');
+    app.quit();
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
+function reload() {
+  if(mainWindow) {
+    // and load the index.html of the app.
+    mainWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'dngearsim.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
   }
-})
+}
 
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
-
-
-//-------------------------------------------------------------------
-// Logging
-//
-// THIS SECTION IS NOT REQUIRED
-//
-// This logging setup is not required for auto-updates to work,
-// but it sure makes debugging easier :)
-//-------------------------------------------------------------------
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
-//-------------------------------------------------------------------
-// Define the menu
-//
-// THIS SECTION IS NOT REQUIRED
-//-------------------------------------------------------------------
+
 let template = []
-if (process.platform === 'darwin') {
-  // OS X
-  const name = app.getName();
-  template.unshift({
-    label: name,
-    submenu: [
-      {
-        label: 'About ' + name,
-        role: 'about'
-      },
-      {
-        label: 'Quit',
-        accelerator: 'Command+Q',
-        click() { app.quit(); }
-      },
-    ]
-  })
-}
+// OS X
+const name = app.getName();
+template.unshift({
+  label: 'File',
+  submenu: [
+    {
+      label: 'Reload',
+      click() { reload(); }
+    },
+    {
+      label: 'Exit',
+      click() { app.quit(); }
+    },
+  ]
+},
+{
+  label: 'About',
+  submenu: [
+    {
+      label: 'Version',
+      click() {
+        dialog.showMessageBox({message: 'version: ' + app.getVersion()});
+      }
+    },
+  ]
+});
 
 
-//-------------------------------------------------------------------
-// Open a window that displays the version
-//
-// THIS SECTION IS NOT REQUIRED
-//
-// This isn't required for auto-updates to work, but it's easier
-// for the app to show a window than to have to click "About" to see
-// that updates are working.
-//-------------------------------------------------------------------
 let win;
 
 function sendStatusToWindow(text) {
@@ -142,13 +124,15 @@ function sendStatusToWindow(text) {
 }
 function createDefaultWindow() {
   win = new BrowserWindow();
-  win.webContents.openDevTools();
   win.on('closed', () => {
+    createWindow();
     win = null;
   });
+
   win.loadURL(`file://${__dirname}/version.html#v${app.getVersion()}`);
   return win;
 }
+
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
 })
@@ -157,9 +141,11 @@ autoUpdater.on('update-available', (info) => {
 })
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
+  createWindow();
 })
 autoUpdater.on('error', (err) => {
-  sendStatusToWindow('Error in auto-updater.');
+  console.log(err);
+  sendStatusToWindow('Error in auto-updater: ' + err.message);
 })
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
@@ -168,49 +154,21 @@ autoUpdater.on('download-progress', (progressObj) => {
   sendStatusToWindow(log_message);
 })
 autoUpdater.on('update-downloaded', (info) => {
-  sendStatusToWindow('Update downloaded; will install in 5 seconds');
+  sendStatusToWindow('Update downloaded; will install in 2 seconds');
 });
 app.on('ready', function() {
   // Create the Menu
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-
   createDefaultWindow();
-});
-app.on('window-all-closed', () => {
-  app.quit();
+  autoUpdater.checkForUpdates();
 });
 
-//-------------------------------------------------------------------
-// Auto updates
-//
-// For details about these events, see the Wiki:
-// https://github.com/electron-userland/electron-builder/wiki/Auto-Update#events
-//
-// The app doesn't need to listen to any events except `update-downloaded`
-//
-// Uncomment any of the below events to listen for them.  Also,
-// look in the previous section to see them being used.
-//-------------------------------------------------------------------
-// autoUpdater.on('checking-for-update', () => {
-// })
-// autoUpdater.on('update-available', (info) => {
-// })
-// autoUpdater.on('update-not-available', (info) => {
-// })
-// autoUpdater.on('error', (err) => {
-// })
-// autoUpdater.on('download-progress', (progressObj) => {
-// })
 autoUpdater.on('update-downloaded', (info) => {
   // Wait 5 seconds, then quit and install
   // In your application, you don't need to wait 5 seconds.
   // You could call autoUpdater.quitAndInstall(); immediately
   setTimeout(function() {
     autoUpdater.quitAndInstall();  
-  }, 5000)
+  }, 2000)
 })
-
-app.on('ready', function()  {
-  autoUpdater.checkForUpdates();
-});

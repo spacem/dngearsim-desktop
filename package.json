@@ -1,6 +1,6 @@
 {
   "name": "dngearsim-desktop",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Dragon Nest Gear Simulator - Desktop Edition",
   "productName": "dngearsim-desktop",
   "main": "main.js",
@@ -8,7 +8,7 @@
     "start": "electron .",
     "old-package": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=dngearsim.ico --out=builds --version-string.CompanyName=spacem --version-string.FileDescription=dngearsim --version-string.ProductName=\"Dragon Nest Gear Simulator - Desktop Edition\"",
     "old-build": "node build.js",
-    "epublish": "node_modules/.bin/build --win -p always"
+    "publish": "node_modules/.bin/build --win -p always"
   },
   "repository": "https://github.com/spacem/dngearsim-desktop",
   "author": "spacem",
