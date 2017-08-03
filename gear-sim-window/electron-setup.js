@@ -1,10 +1,11 @@
 const fs = require('fs');
 const {dialog} = require('electron').remote;
+const preProcessFunc = require('../preprocessor');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
   templateUrl: __dirname + '/electron-setup.html',
-  controller: ['$window', 'region',
-  function($window, region) {
+  controller: ['$window', '$timeout', 'region',
+  function($window, $timeout, region) {
     const ctrl = this;
     $window.document.title = 'dngearsim | SETUP';
 
@@ -49,7 +50,7 @@ angular.module('dnsim').component('dnsimElectronSetup', {
           localStorage.setItem('workFolder', ctrl.workLocation);
         }
         else {
-          if(files.find(e => e.indexOf('Version.cfg') >= 0) && files.find(e => e.indexOf('uistring.lzjson') >= 0)) {
+          if(files.find(e => e.indexOf('Version.cfg') >= 0) && files.find(e => e.indexOf('uistring.json') >= 0)) {
             var contents = fs.readFileSync(ctrl.workLocation + '\\Version.cfg', 'utf8');
             var versionString = contents.split('\n')[0];
             var versionIndex = contents.indexOf('Version');
@@ -102,7 +103,15 @@ angular.module('dnsim').component('dnsimElectronSetup', {
     }
 
     ctrl.buildFiles = function() {
-      dialog.showMessageBox({message: 'Coming soon!'});
+      if(dialog.showMessageBox({
+        message: 'This might take some time.',
+        type: 'question',
+        buttons: ['OK', 'Cancel'],
+      }) == 0) {
+        preProcessFunc(ctrl.dnLocation, ctrl.workLocation);
+        dialog.showMessageBox({message: 'Complete'});
+        ctrl.preProcessStatus = 'ready';
+      }
     }
 
     ctrl.validateWorking();

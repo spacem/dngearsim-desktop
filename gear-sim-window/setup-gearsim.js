@@ -18,8 +18,6 @@ function dnsimElectronSetPath(region) {
     region.setLocation(region.alternativeFiles);
 }
 
-
-
 angular.module('dnsim').config(['$routeProvider', configureElectronRoutes]);
 function configureElectronRoutes($routeProvider) {
   $routeProvider.
