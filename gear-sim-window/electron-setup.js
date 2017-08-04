@@ -50,7 +50,7 @@ angular.module('dnsim').component('dnsimElectronSetup', {
           localStorage.setItem('workFolder', ctrl.workLocation);
         }
         else {
-          if(files.find(e => e.indexOf('Version.cfg') >= 0) && files.find(e => e.indexOf('uistring.json') >= 0)) {
+          if(files.find(e => e.indexOf('Version.cfg') >= 0) && files.find(e => e.indexOf('uistring') >= 0)) {
             var contents = fs.readFileSync(ctrl.workLocation + '\\Version.cfg', 'utf8');
             var versionString = contents.split('\n')[0];
             var versionIndex = contents.indexOf('Version');
