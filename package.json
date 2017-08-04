@@ -1,6 +1,6 @@
 {
   "name": "dngearsim-desktop",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Dragon Nest Gear Simulator - Desktop Edition",
   "productName": "dngearsim-desktop",
   "main": "main.js",

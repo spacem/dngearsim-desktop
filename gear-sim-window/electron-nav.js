@@ -8,15 +8,15 @@ angular.module('dnsim').component('electronNav', {
     try {
       var noLocationMenu = [];
       var normalMenu = [
-        {path: 'builds', name:'builds', icon: 'menu-hamburger'},
-        {path: 'search', name:'search', icon: 'search'},
+        {path: '/builds', name:'builds', icon: 'menu-hamburger'},
+        {path: '/search', name:'search', icon: 'search'},
         ];
       
       var buildAction = {path: 'build', name:'build'};
       
       var withBuildMenu = [
-        {path: 'builds', name:'builds', icon: 'menu-hamburger'},
-        {path: 'search', name:'search', icon: 'search'},
+        {path: '/builds', name:'builds', icon: 'menu-hamburger'},
+        {path: '/search', name:'search', icon: 'search'},
         buildAction,
         ];
         
@@ -62,7 +62,7 @@ angular.module('dnsim').component('electronNav', {
           }
           else if(currentBuild && currentBuild != 'null') {
             menu = withBuildMenu;
-            buildAction.path = 'build/' + currentBuild;
+            buildAction.path = 'build?buildName=' + currentBuild;
             buildAction.name = currentBuild;
             if(currentBuild in ctrl.savedItems) {
               buildAction.build = ctrl.savedItems[currentBuild];
