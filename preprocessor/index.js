@@ -6,11 +6,18 @@ var uistringzipFunc = require('./uistringzip');
 var getItemsFunc = require('./getitems');
 var getStringsFunc = require('./getstrings');
 
-module.exports = function(sourceDir, workingDir) {
+module.exports = async function(sourceDir, workingDir) {
+
+    fs.readdirSync(workingDir).forEach(function (name) {
+        if(name.indexOf('.lzjson') >= 0 || name.indexOf('.dnt') >= 0 || name.indexOf('.json') >= 0 || name.indexOf('Version.cfg') >= 0 || name.indexOf('uistring.xml') >= 0) {
+            fs.unlinkSync(workingDir + '\\' + name);
+        }
+    });
+
     var extractPaks = new ExtractPaks(sourceDir, workingDir);
     extractPaks.extract();
     preProcessFunc(workingDir);
-    uistringzipFunc(workingDir);
+    await uistringzipFunc(workingDir);
 
     getItemsFunc(workingDir);
     getStringsFunc(workingDir);

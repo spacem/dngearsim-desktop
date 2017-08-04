@@ -26,6 +26,9 @@ module.exports = function getItems(sourceDir) {
   outputFolder = sourceDir;
   
   walkSync(sourceDir, function(filePath, stat) {
+    if(filePath.indexOf('.dnt') == -1) {
+      return;
+    }
       
     var fileName = path.basename(filePath, '.dnt');
     
@@ -59,7 +62,7 @@ module.exports = function getItems(sourceDir) {
     }
   }
   catch(ex) {
-    console.log(ex);
+    console.log(filePath, ex);
   }
     }
   });

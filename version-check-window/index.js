@@ -30,33 +30,33 @@ module.exports = class VersionWindow {
         this.win.loadURL(`file://${__dirname}/version.html#v${app.getVersion()}`);
 
         autoUpdater.on('checking-for-update', () => {
-            this.sendStatusToWindow('Checking for update...');
+            this.sendStatusToWindow('checking for update...');
         });
 
         autoUpdater.on('update-available', (info) => {
-            this.sendStatusToWindow('Update available.');
+            this.sendStatusToWindow('update available.');
         });
 
         autoUpdater.on('update-not-available', (info) => {
-            this.sendStatusToWindow('Update not available.');
+            this.sendStatusToWindow('update not available.');
             this.close();
         });
 
         autoUpdater.on('error', (err) => {
             console.log(err);
-            this.sendStatusToWindow('Error in auto-updater: ' + err.message);
+            this.sendStatusToWindow('error in auto-updater: ' + err.message);
             this.closeSoon();
         });
 
         autoUpdater.on('download-progress', (progressObj) => {
-            let log_message = "Download speed: " + progressObj.bytesPerSecond;
-            log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-            log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+            let log_message = "download speed: " + Math.round(progressObj.bytesPerSecond/1024) + 'KB/Sec';;
+            log_message = log_message + ' - downloaded ' + Math.round(progressObj.percent) + '%';
+            log_message = log_message + ' (' + Math.round(progressObj.transferred/1024/1024) + "MB/" + Math.round(progressObj.total/1024/1024) + 'MB)';
             this.sendStatusToWindow(log_message);
         });
 
         autoUpdater.on('update-downloaded', (info) => {
-            this.sendStatusToWindow('Update downloaded; will install in 2 seconds');
+            this.sendStatusToWindow('update downloaded; just wait it will install in two seconds');
         });
 
         autoUpdater.on('update-downloaded', (info) => {

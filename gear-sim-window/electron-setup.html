@@ -1,37 +1,42 @@
-<div
-    class="col-xs-12">
-    <label>{{'working folder:' | translate}}</label>
-    <div class="input-group">
-        <input type="text" class="form-control" ng-model="$ctrl.workLocation" />
-        <span class="input-group-btn">
-            <button class="btn btn-default" ng-click="$ctrl.selectWorkingFolder()">...</button>
-        </span>
+<div ng-if="$ctrl.processing">
+    processing data files - this might take some time
+</div>
+<div ng-if="!$ctrl.processing">
+    <div
+        class="col-xs-12">
+        <label>{{'working folder:' | translate}}</label>
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="$ctrl.workLocation" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="$ctrl.selectWorkingFolder()">...</button>
+            </span>
+        </div>
     </div>
-</div>
-<div
-    class="col-xs-12">
-    <button class="btn btn-default" ng-click="$ctrl.validateWorking()">check working folder</button> {{$ctrl.workingFolderStatus}}
-    <br /><br />
-</div>
-<div
-    class="col-xs-12">
-    <label>{{'location of dragon nest pak files:' | translate}}</label>
-    <div class="input-group">
-        <input type="text" class="form-control" ng-model="$ctrl.dnLocation" />
-        <span class="input-group-btn">
-            <button class="btn btn-default" ng-click="$ctrl.selectGameFolder()">...</button>
-        </span>
+    <div
+        class="col-xs-12">
+        <button class="btn btn-default" ng-click="$ctrl.validateWorking()">check working folder</button> {{$ctrl.workingFolderStatus}}
+        <br /><br />
     </div>
-</div>
+    <div
+        class="col-xs-12">
+        <label>{{'location of dragon nest pak files:' | translate}}</label>
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="$ctrl.dnLocation" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="$ctrl.selectGameFolder()">...</button>
+            </span>
+        </div>
+    </div>
 
-<div
-    class="col-xs-12">
-     {{$ctrl.dnFolderStatus}}
-    <br />
-    <button class="btn btn-default" ng-click="$ctrl.validateGame()">check game folder</button> {{$ctrl.gameFolderStatus}}
-    <button class="btn btn-default" ng-click="$ctrl.buildFiles()">extract and process data files</button>
-</div>
-<div
-    class="col-xs-12">
-     {{$ctrl.preProcessStatus}}
+    <div
+        class="col-xs-12">
+        {{$ctrl.dnFolderStatus}}
+        <br />
+        <button class="btn btn-default" ng-click="$ctrl.validateGame()">check game folder</button> {{$ctrl.gameFolderStatus}}
+        <button class="btn btn-default" ng-click="$ctrl.buildFiles()">extract and process data files</button>
+    </div>
+    <div
+        class="col-xs-12">
+        {{$ctrl.preProcessStatus}}
+    </div>
 </div>

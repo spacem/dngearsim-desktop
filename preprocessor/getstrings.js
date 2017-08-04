@@ -5,7 +5,7 @@ var DntReader = require('./dntreader');
 
 module.exports = function getstrings(workingFolder) {
 
-  var uiStringFile = workingFolder + '\\uistring.xml';
+  var uiStringFile = workingFolder + '\\uistring.lzjson';
   var sourceDir = workingFolder;
   var outputFolder = workingFolder;
 
@@ -35,6 +35,9 @@ module.exports = function getstrings(workingFolder) {
   }
   
   walkSync(sourceDir, function(filePath, stat) {
+    if(filePath.indexOf('.lzjson') == -1) {
+      return;
+    }
 
     try {
       var fileName = path.basename(filePath, '.lzjson');

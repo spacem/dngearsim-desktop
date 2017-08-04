@@ -65,45 +65,33 @@ function DnTranslations() {
     }
   }
 
-  function unzipBlobToText(blob, callback) {
-    // use a zip.BlobReader object to read zipped data stored into blob variable
-    zip.createReader(new zip.BlobReader(blob), function(zipReader) {
-      // get entries from the zip file
-      zipReader.getEntries(function(entries) {
-        // get data from the first file
-        entries[0].getData(new zip.TextWriter("text/plain"), function(data) {
-          // close the reader and calls callback function with uncompressed data as parameter
-          zipReader.close();
-          callback(data);
-        });
-      });
-    }, onerror);
-  }
-  
   function onerror(message) {
     console.error(message);
   }
 }
 
 module.exports = function uistringzip(workingFolder) {
-
   var dnTranslations = new DnTranslations(); // loads the uistring.xml
   // dnTranslations.sizeLimit = 1000;
 
-
-  dnTranslations.loadDefaultFile(
-    workingFolder + '\\uistring.xml',
-    function(msg) {
-      // console.log(msg);
-    },
-    () => showTranslations(dnTranslations, workingFolder),
-    function(msg) {
-      // console.log(msg);
-    }
-  );
+  return new Promise((resolve, reject) => {
+    dnTranslations.loadDefaultFile(
+      workingFolder + '\\uistring.xml',
+      function(msg) {
+        // console.log(msg);
+      },
+      () => {
+        writeTranslations(dnTranslations, workingFolder),
+        resolve();
+      },
+      function(msg) {
+        // console.log(msg);
+      }
+    );
+  });
 }
 
-function showTranslations(dnTranslations, path) {
+function writeTranslations(dnTranslations, path) {
   // console.log('showing');
     var data = JSON.stringify(dnTranslations.data);
     // console.log('len' + data.length);

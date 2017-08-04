@@ -276,7 +276,7 @@ module.exports = function DntReader() {
     var stringifiedData = LZString.decompressFromUTF16(blobv);
     var end = new Date().getTime();
     var time = end - start;
-    console.log('decompress time: ' + time/1000 + 's for ' + fileName);
+    // console.log('decompress time: ' + time/1000 + 's for ' + fileName);
 
     this.processJsonFile(stringifiedData, fileName);
   }

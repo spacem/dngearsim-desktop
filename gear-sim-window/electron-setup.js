@@ -102,15 +102,24 @@ angular.module('dnsim').component('dnsimElectronSetup', {
       }
     }
 
+    ctrl.doProcessing = function() {
+        preProcessFunc(ctrl.dnLocation, ctrl.workLocation).then(() => {
+          ctrl.processing = false;
+          ctrl.preProcessStatus = 'ready';
+          $timeout();
+        });
+    }
+
     ctrl.buildFiles = function() {
       if(dialog.showMessageBox({
         message: 'This might take some time.',
         type: 'question',
         buttons: ['OK', 'Cancel'],
       }) == 0) {
-        preProcessFunc(ctrl.dnLocation, ctrl.workLocation);
-        dialog.showMessageBox({message: 'Complete'});
-        ctrl.preProcessStatus = 'ready';
+        localStorage.setItem('dnFolder', ctrl.dnLocation);
+        localStorage.setItem('workFolder', ctrl.workLocation);
+        ctrl.processing = true;
+        $timeout(() => ctrl.doProcessing());
       }
     }
 
