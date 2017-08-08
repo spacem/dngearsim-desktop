@@ -38,7 +38,20 @@ module.exports = class PakUtil {
         });
     }
 
-    extractDntFiles() {
+    processDntFiles(processFunc) {
+        return this.processFiles('.dnt', processFunc);
+    }
+
+    processUiStringFiles(processFunc) {
+        return this.processFiles('uistring.xml', processFunc);
+    }
+
+    async extractFiles() {
+        await this.processDntFiles((fileName, buffer) => this.writeFile(fileName, buffer));
+        await this.processUiStringFiles((fileName, buffer) => this.writeFile(fileName, buffer));
+    }
+
+    processFiles(fileFilter, processFunc) {
         var promises = [];
         for(let pak in this.pakFileContents) {
             promises.push(new Promise((resolve, reject) => {
@@ -47,7 +60,7 @@ module.exports = class PakUtil {
                         reject(err);
                     }
                     else {
-                        this.extractDntFilesOfDescriptor(fd, this.pakFileContents[pak]).then(() => {
+                        this.extractDntFilesOfDescriptor(fd, this.pakFileContents[pak], fileFilter, processFunc).then(() => {
                             fs.close(fd, resolve);
                         }).catch(reject);
                     }
@@ -58,11 +71,12 @@ module.exports = class PakUtil {
         return Promise.all(promises);
     }
 
-    async extractDntFilesOfDescriptor(fd, fileDetails) {
-        var bigBuffer = new Buffer(1024*1204);
+    async extractDntFilesOfDescriptor(fd, fileDetails, fileFilter, processFunc) {
         for(let i=0;i<fileDetails.length;++i) {
             let fileDetail = fileDetails[i];
-            await this.extractFile(fd, fileDetail.fileName, fileDetail.offset, fileDetail.size, fileDetail.zsize, bigBuffer);
+            if(fileDetail.fileName.indexOf(fileFilter) >= 0) {
+                await this.extractFile(fd, fileDetail.fileName, fileDetail.offset, fileDetail.size, fileDetail.zsize, processFunc);
+            }
         }
     }
 
@@ -146,7 +160,7 @@ module.exports = class PakUtil {
         }
     }
     
-    async extractFile(fd, fileName, offset, size, zsize, bigBuffer) {
+    async extractFile(fd, fileName, offset, size, zsize, processFunc) {
         const pathChunks = fileName.split('\\');
         const fileOnlyName = pathChunks[pathChunks.length-1];
         var fileName = this.destDir + '\\' + fileOnlyName;
@@ -154,11 +168,7 @@ module.exports = class PakUtil {
         await this.removeExisting(fileName);
         let buffer;
         if(zsize > 0) {
-            let useBuffer = bigBuffer;
-            if(bigBuffer.length < zsize) {
-                // console.log('not big enough for', zsize);
-                useBuffer = new Buffer(zsize);
-            }
+            let useBuffer = new Buffer(zsize);
             let chunk = await this.readChunk(fd, offset, zsize, useBuffer);
             buffer = await new Promise((resolve, reject) => {
                 zlib.inflate(chunk, (err, buffer) => {
@@ -175,7 +185,7 @@ module.exports = class PakUtil {
             buffer = await this.readChunk(fd, offset, size, new Buffer(size));
         }
 
-        return await this.writeFile(fileName, buffer);
+        return await processFunc(fileName, buffer);
     }
 
     writeFile(fileName, buffer) {

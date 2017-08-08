@@ -1,3 +1,6 @@
+var SimplerReader = require('./simplerreader');
+
+
 module.exports = function DntReader() {
 // module for to allow reading of dnt data from dnt files
 // right now this simply loads the whole file into the data property
@@ -58,6 +61,9 @@ module.exports = function DntReader() {
       if(this.colsToLoad === null || this.colsToLoad[colName]) {
         colIsRead[c] = true;
         colReaders[c] = readFuncs[colType];
+        if(!colReaders[c]) {
+          throw new Error('what is colType ' + colType + ' for ' + colName);
+        }
 
         this.columnNames[colIndex] = colName;
         this.columnTypes[colIndex] = colType;

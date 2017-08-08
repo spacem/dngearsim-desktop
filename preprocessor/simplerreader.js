@@ -1,85 +1,69 @@
-module.exports = function SimplerReader(pFile, startPos, littleEndian) {
-// module to track position while reading binary data
-'use strict';
+module.exports = class SimplerReader {
+
+  constructor(buffer, startPos, littleEndian) {
+    this.pos = startPos;
+    this.buffer = buffer;
+    this.littleEndian = littleEndian;
+  }
   
-  this.pos = startPos;
-  this.file = new DataView(pFile);
-  this.littleEndian = littleEndian;
-  
-  this.readUint16 = function() {
+  readUint16() {
     this.pos += 2;
-    return this.file.getUint16(this.pos-2, this.littleEndian);
+    return this.buffer.readUInt16LE(this.pos-2);
   }
   
-  this.readUint32 = function() {
+  readUint32() {
     this.pos += 4;
-    return this.file.getUint32(this.pos-4, this.littleEndian);
+    return this.buffer.readUInt32LE(this.pos-4);
   }
   
-  this.readInt32 = function() {
+  readInt32() {
     this.pos += 4;
-    return this.file.getInt32(this.pos-4, this.littleEndian);
+    return this.buffer.readUInt32LE(this.pos-4);
   }
   
-  this.readFloat32 = function() {
+  readFloat32() {
     this.pos += 4;
-    var floatVal = this.file.getFloat32(this.pos-4, this.littleEndian);
+    var floatVal = this.buffer.readFloatLE(this.pos-4);
     return Math.round(floatVal*100000)/100000;
   }
   
-  this.readByte = function() {
+  readByte() {
     this.pos += 1;
-    return this.file.getUint8(this.pos-1, this.littleEndian);
+    return this.buffer.readUInt8(this.pos-1);
   }
   
-  this.readString = function() {
+  readString() {
     var len = this.readUint16();
-    if(len === 0) {
-      return '';
+    var val = this.buffer.toString('utf8', this.pos, this.pos+len);
+    this.pos += len;
+    if(val && val.length > 6 && val.indexOf('.') > 0 && !isNaN(val)) {
+      return Math.round(Number(val)*100000)/100000;
     }
-    else if(len === 1) {
-      return String.fromCharCode(this.readByte());
-    }
-    else {
-      
-      // var retVal = '';
-      var strings = new Array(len);
-      for(var c=0;c<len;++c) {
-        
-        strings[c] = String.fromCharCode(this.readByte());
-        // retVal += String.fromCharCode(this.readByte());
-      }
-      
-      var val = strings.join('');
-      if(val && val.length > 6 && val.indexOf('.') > 0 && !isNaN(val)) {
-        return Math.round(Number(val)*100000)/100000;
-      }
 
-      return val;
-    }
+    return val;
   }
   
-  this.skipUint16 = function() {
+  skipUint16() {
     this.pos += 2;
   }
   
-  this.skipUint32 = function() {
+  skipUint32() {
     this.pos += 4;
   }
   
-  this.skipInt32 = function() {
+  skipInt32() {
     this.pos += 4;
   }
   
-  this.skipFloat32 = function() {
+  skipFloat32() {
     this.pos += 4;
   }
   
-  this.skipByte = function() {
+  skipByte() {
     this.pos += 1;
   }
   
-  this.skipString = function() {
+  skipString() {
     var len = this.readUint16();
     this.pos += len;
   }
