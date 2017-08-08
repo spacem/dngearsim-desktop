@@ -21,6 +21,7 @@ module.exports = class ExtractPaks {
         this.destDir = destDir;
         this.fd = null;
         this.pos = 0;
+        this.reusableBuffers = {};
     }
 
     extract() {
@@ -34,7 +35,7 @@ module.exports = class ExtractPaks {
     }
 
     extractFromFile(filePath) {
-        console.log('reading ', filePath);
+        // console.log('reading ', filePath);
         this.fd = fs.openSync(filePath, 'r');
         try {
             this.pos = 0x104;
@@ -60,7 +61,7 @@ module.exports = class ExtractPaks {
             }
 
             if(filesExtracted) {
-                console.log('extracted ' + filesExtracted + ' files');
+                // console.log('extracted ' + filesExtracted + ' files');
             }
         }
         finally {
@@ -95,7 +96,15 @@ module.exports = class ExtractPaks {
     }
         
     readChunk(position, length) {
-        const buffer = new Buffer(length);
+
+        let buffer;
+        if(length in this.reusableBuffers) {
+            buffer = this.reusableBuffers[length];
+        }
+        else {
+            buffer = new Buffer(length);
+            this.reusableBuffers[length] = buffer;
+        }
         const bytesRead = fs.readSync(this.fd, buffer, 0, length, position);
         if(bytesRead != length) {
             console.error('this will be harder than I thought');
