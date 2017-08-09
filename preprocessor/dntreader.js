@@ -1,23 +1,24 @@
 var SimplerReader = require('./simplerreader');
 
 
-module.exports = function DntReader() {
+module.exports = class DntReader {
 // module for to allow reading of dnt data from dnt files
 // right now this simply loads the whole file into the data property
 // data is an array of objects eg [{id: "123",NameParam: "456"}]
-'use strict';
   
-  this.data = [];
-  this.columnNames = [];
-  this.columnTypes = [];
-  this.columnIndexes = [];
-  this.numRows = 0;
-  this.numColumns = 0;
-  this.fileName = "";
-  this.colsToLoad = null;
+  constructor() {
+    this.data = [];
+    this.columnNames = [];
+    this.columnTypes = [];
+    this.columnIndexes = [];
+    this.numRows = 0;
+    this.numColumns = 0;
+    this.fileName = "";
+    this.colsToLoad = null;
+  }
   
   // function to populate the object with the data in the dnt file
-  this.processFile = function(arrayBuffer, fileName) {
+  processFile(arrayBuffer, fileName) {
     
     var start = new Date().getTime();
     
@@ -105,11 +106,11 @@ module.exports = function DntReader() {
     // console.log('dnt process time: ' + time/1000 + 's for ' + fileName);
   }
   
-  this.getRow = function(index) {
+  getRow(index) {
     return this.convertData(this.data[index]);
   }
   
-  this.convertData = function(d) {
+  convertData(d) {
     var item = {id: d[0]};
 
     for(var c=1;c<this.numColumns;++c) {
@@ -121,7 +122,7 @@ module.exports = function DntReader() {
     return item;
   }
   
-  this.getValue = function(index, colName) {
+  getValue(index, colName) {
     if(colName in this.columnIndexes) {
       return this.data[index][this.columnIndexes[colName]];
     }
@@ -132,7 +133,7 @@ module.exports = function DntReader() {
   
   // function to load in dnt data from a hosted file
   // if the file is not found it will try a zip with the same name
-  this.loadDntFromServerFile = function(fileName, statusFunc, processFileFunc, failFunc) {
+  loadDntFromServerFile(fileName, statusFunc, processFileFunc, failFunc) {
     var useFileName = fileName;
     if(this.colsToLoad === null && fileName.toUpperCase().lastIndexOf(".LZJSON") != fileName.length-7 && fileName.toUpperCase().lastIndexOf(".JSON") != fileName.length-5) {
       useFileName = fileName.substr(0,fileName.length-4) + '.lzjson';
@@ -140,7 +141,7 @@ module.exports = function DntReader() {
     this.loadDntFromServerFileImpl(useFileName, statusFunc, processFileFunc, failFunc);
   }
   
-  this.loadDntFromServerFileImpl = function(fileName, statusFunc, processFileFunc, failFunc) {
+  loadDntFromServerFileImpl(fileName, statusFunc, processFileFunc, failFunc) {
     
     // console.log("about to load");
     var isLzJson = (fileName.toUpperCase().lastIndexOf(".LZJSON") == fileName.length-7);
@@ -260,7 +261,7 @@ module.exports = function DntReader() {
     xhr.send();
   }
   
-  this.processJsonFile = function(json, fileName) {
+  processJsonFile(json, fileName) {
     var dlData = JSON.parse(json);
     
     this.data = dlData.data;
@@ -277,7 +278,7 @@ module.exports = function DntReader() {
     }
   }
   
-  this.processLzFile = function(blobv, fileName) {
+  processLzFile(blobv, fileName) {
     var start = new Date().getTime();
     var stringifiedData = LZString.decompressFromUTF16(blobv);
     var end = new Date().getTime();
@@ -287,7 +288,7 @@ module.exports = function DntReader() {
     this.processJsonFile(stringifiedData, fileName);
   }
   
-  function unzipBlob(blob, callback) {
+  unzipBlob(blob, callback) {
     // use a zip.BlobReader object to read zipped data stored into blob variable
     zip.createReader(new zip.BlobReader(blob), function(zipReader) {
       // get entries from the zip file
@@ -302,7 +303,7 @@ module.exports = function DntReader() {
     }, onerror);
   }
   
-  function onerror(message) {
+  onerror(message) {
     console.error(message);
   }
 }

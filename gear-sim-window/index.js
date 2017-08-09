@@ -23,6 +23,8 @@ module.exports = class GearSimWindow {
             }
         });
 
+        this.mainWindow.openDevTools();
+
         session.defaultSession.webRequest.onBeforeRequest({urls: ['file:/**/images/**', 'file:/**/*.lzjson']}, function(details, callback) {
             var index = details.url.indexOf('/images');
             if(index >= 0 && details.url.indexOf('file:') == 0) {

@@ -3,7 +3,7 @@ const {dialog} = require('electron').remote;
 const preProcessFunc = require('../preprocessor');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
-  templateUrl: __dirname + '/electron-setup.html',
+  templateUrl: __dirname + '/gearsim-setup.html',
   controller: ['$window', '$timeout', 'region',
   function($window, $timeout, region) {
     const ctrl = this;

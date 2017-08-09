@@ -107,7 +107,10 @@
 </div>
 
 <script src="https://spacem.github.io/dngearsim/min/libs.min.js"></script>
-<script src="https://spacem.github.io/dngearsim/min/dntviewer.min.js"></script>
+<script>
+    DntReader = require('./dntreader-swap.js');
+    DnTranslations = require('./translations-swap.js');
+</script>
 
 <script src="https://spacem.github.io/dngearsim/app.js"></script>
 <script src="https://spacem.github.io/dngearsim/min/templates.min.js"></script>
@@ -124,8 +127,8 @@
 </body>
 
   <script>
-    require('./setup-gearsim.js');
+    require('./gearsim-bootup.js');
     require('./electron-nav.js');
-    require('./electron-setup.js');
+    require('./gearsim-setup.js');
   </script>
 </html>
