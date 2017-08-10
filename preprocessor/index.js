@@ -5,12 +5,20 @@ var fs = require('fs');
 var preProcessFunc = require('./dntpreprocess-json');
 var getItemsFunc = require('./getitems-json');
 
-module.exports = async function(sourceDir, workingDir) {
-    
+module.exports = async function(sourceDir, workingDir, progressFunc) {
+
+
+    var start = new Date().getTime();
     var util = new PaksUtil(sourceDir, workingDir);
     await util.loadFiles();
+    progressFunc('looked at paks');
+    console.log('loadFiles time', (new Date().getTime() - start)/1000);
+    start = new Date().getTime();
 
     await util.processUiStringFiles((fileName, buffer) => {
+        progressFunc('processed uistring');
+        console.log('processUiStringFiles time ', (new Date().getTime() - start)/1000);
+        start = new Date().getTime();
         var dnTranslations = new DnTranslations();
         return new Promise((resolve, reject) => {
             dnTranslations.process(buffer.toString(), function() {}, () => {
@@ -26,15 +34,31 @@ module.exports = async function(sourceDir, workingDir) {
             });
         });
     });
+    progressFunc('wrote uistring.json');
+    console.log('write uistringfiles time ', (new Date().getTime() - start)/1000);
+    start = new Date().getTime();
 
     await util.processDntFiles((fileName, buffer) => {
         return writeRawDntAsJson(workingDir, fileName, buffer);
     });
-    preProcessFunc(workingDir);
+    progressFunc('processed dnt files');
+    console.log('processedDnt time ', (new Date().getTime() - start)/1000);
+    start = new Date().getTime();
+
+    await preProcessFunc(workingDir);
+    progressFunc('preformed pre-processing of dnt files');
+    console.log('preProcess time ', (new Date().getTime() - start)/1000);
+    start = new Date().getTime();
+
     getItemsFunc(workingDir);
+    progressFunc('built item index');
+    console.log('getitems time ', (new Date().getTime() - start)/1000);
+    start = new Date().getTime();
 
     var data = fs.readFileSync(sourceDir + '\\Version.cfg', 'utf-8');
     fs.writeFileSync(workingDir + '\\Version.cfg', data);
+    progressFunc('copied version.cfg');
+    console.log('version time ', (new Date().getTime() - start)/1000);
 }
 
 async function writeRawDntAsJson(workingDir, fileName, buffer) {

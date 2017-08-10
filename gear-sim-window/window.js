@@ -23,7 +23,7 @@ module.exports = class GearSimWindow {
             }
         });
 
-        this.mainWindow.openDevTools();
+        // this.mainWindow.openDevTools();
 
         session.defaultSession.webRequest.onBeforeRequest({urls: ['file:/**/images/**', 'file:/**/*.lzjson']}, function(details, callback) {
             var index = details.url.indexOf('/images');

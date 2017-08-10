@@ -6,9 +6,7 @@ var DntReader = require('./dntreader');
 
 var colsToLoadLookup = null;
 
-module.exports = function preProcess(workingFolder) {
-  var sourceDir = workingFolder;
-  var outputFolder = workingFolder;
+module.exports = async function preProcess(workingFolder) {
 
   try {
     
@@ -17,75 +15,14 @@ module.exports = function preProcess(workingFolder) {
     
     // now output itemtables and build up list of items that were skipped
     console.log('writing optimised item files');
-    walkSync(sourceDir, function(filePath) {
-        
-      var fileName = path.basename(filePath, '.json');
-      if(!isItemFile(fileName + '.dnt')) {
-        return;
-      }
-      
-      var jsonFileName = outputFolder + '/' + fileName + '.optimised.json';
-      if(filePath.indexOf('.json') == filePath.length - 5) {
-        
-        var data = readFile(filePath);
-        if(data.length == 0) {
-        }
-        else {
-          var dntReader = new DntReader();
-          dntReader.colsToLoad = getColsToLoad(fileName + '.dnt');
-          if(!dntReader.colsToLoad) {
-            dntReader.colsToLoad = null;
-          }
-          dntReader.processJsonFile(data, filePath);
-          data = null;
-          
-          var filtered = filterItemData(fileName + '.dnt', dntReader);
-          // console.log(' filtered ' + dntReader.numRows + ' rows');
-          for(var i=0;i<dntReader.numRows;++i) {
-            enchantmentsToUse[dntReader.getValue(i, 'EnchantID')] = true;
-            potentialsToUse[dntReader.getValue(i, 'TypeParam1')] = true;
-          }
-          
-          if((filtered || dntReader.colsToLoad) && !fileExists(jsonFileName)) {
-            writeFileFromReader(dntReader, jsonFileName);
-          }
-          dntReader = null;
-        }
-      }
+    walkSync(workingFolder, filePath => {
+      processItemFile(workingFolder, filePath, potentialsToUse, enchantmentsToUse)
     });
     
     // finally output other files
     console.log('writing other optimised files');
-    walkSync(sourceDir, function(filePath) {
-        
-      var fileName = path.basename(filePath, '.json');
-      if(isItemFile(fileName + '.dnt')) {
-        return;
-      }
-      
-      var jsonFileName = outputFolder + '/' + fileName + '.optimised.json'
-      if(filePath.indexOf('.json') == filePath.length - 5) {
-        
-        var data = readFile(filePath);
-        if(data.length == 0) {
-        }
-        else {
-          var dntReader = new DntReader();
-          dntReader.colsToLoad = getColsToLoad(fileName + '.dnt');
-          if(!dntReader.colsToLoad) {
-            dntReader.colsToLoad = null;
-          }
-          dntReader.processJsonFile(data, filePath);
-          data = null;
-          
-          if(!filterData(fileName + '.dnt', dntReader, potentialsToUse, enchantmentsToUse) && !dntReader.colsToLoad) {
-            return;
-          }
-          
-          writeFileFromReader(dntReader, jsonFileName);
-          dntReader = null;
-        }
-      }
+    walkSync(workingFolder, filePath => {
+      processOtherFile(workingFolder, filePath, potentialsToUse, enchantmentsToUse)
     });
   }
   catch(ex) {
@@ -94,13 +31,77 @@ module.exports = function preProcess(workingFolder) {
   }
 }
 
+function processItemFile(outputFolder, filePath, potentialsToUse, enchantmentsToUse) {
+      
+    var fileName = path.basename(filePath, '.json');
+    if(!isItemFile(fileName + '.dnt')) {
+      return;
+    }
+    
+    var jsonFileName = outputFolder + '/' + fileName + '.optimised.json';
+    if(filePath.indexOf('.json') == filePath.length - 5) {
+      
+      var data = fs.readFileSync(filePath);
+      if(data.length == 0) {
+      }
+      else {
+        var dntReader = new DntReader();
+        dntReader.colsToLoad = getColsToLoad(fileName + '.dnt');
+        if(!dntReader.colsToLoad) {
+          dntReader.colsToLoad = null;
+        }
+        dntReader.processJsonFile(data, filePath);
+        data = null;
+        
+        var filtered = filterItemData(fileName + '.dnt', dntReader);
+        // console.log(' filtered ' + dntReader.numRows + ' rows');
+        for(var i=0;i<dntReader.numRows;++i) {
+          enchantmentsToUse[dntReader.getValue(i, 'EnchantID')] = true;
+          potentialsToUse[dntReader.getValue(i, 'TypeParam1')] = true;
+        }
+        
+        if((filtered || dntReader.colsToLoad)) {
+          writeFileFromReader(dntReader, jsonFileName);
+        }
+        dntReader = null;
+      }
+    }
+  }
+
+function processOtherFile(outputFolder, filePath, potentialsToUse, enchantmentsToUse) {
+    var fileName = path.basename(filePath, '.json');
+    if(isItemFile(fileName + '.dnt')) {
+      return;
+    }
+    
+    var jsonFileName = outputFolder + '/' + fileName + '.optimised.json'
+    if(filePath.indexOf('.json') == filePath.length - 5) {
+      
+      var data = fs.readFileSync(filePath);
+      if(data.length == 0) {
+      }
+      else {
+        var dntReader = new DntReader();
+        dntReader.colsToLoad = getColsToLoad(fileName + '.dnt');
+        if(!dntReader.colsToLoad) {
+          dntReader.colsToLoad = null;
+        }
+        dntReader.processJsonFile(data, filePath);
+        data = null;
+        
+        if(!filterData(fileName + '.dnt', dntReader, potentialsToUse, enchantmentsToUse) && !dntReader.colsToLoad) {
+          return;
+        }
+        
+        writeFileFromReader(dntReader, jsonFileName);
+        dntReader = null;
+      }
+    }
+  }
+
 function writeFileFromReader(dntReader, jsonFileName) {
   var dataString = JSON.stringify(dntReader);
-  outputFile(dataString, jsonFileName);
-}
-
-function toArrayBuffer(b) {
-  return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+  fs.writeFileSync(jsonFileName, dataString);
 }
 
 function getColsToLoad(fileName) {
@@ -530,46 +531,10 @@ function filterItemData(fileName, data) {
   }
 }
 
-function outputFile(data, fileName) {
-  try
-  {
-    // console.log('writing file: ' + fileName);
-    // console.log('should be ' + data.length * 2 + 'bytes');
-    fs.writeFileSync(fileName, data);
-  }
-  catch(ex) {
-    console.log('--- ERROR --- ');
-    console.log('--- ERROR --- ');
-    console.log('--- ERROR --- ');
-    console.log(ex);
-  }
-}
-
-function readFile(filePath) {
-  return fs.readFileSync(filePath);
-}
-
 function walkSync(currentDirPath, callback) {
     fs.readdirSync(currentDirPath).forEach(function (name) {
       if(name.indexOf('.json') >= 0 && name.indexOf('uistring') == -1) {
           callback(path.join(currentDirPath, name));
       }
     });
-}
-
-function fileExists(path) {
-
-  try  {
-    return fs.statSync(path).isFile();
-  }
-  catch (e) {
-
-    if (e.code == 'ENOENT') { // no such file or directory. File really does not exist
-      // console.log("File does not exist.");
-      return false;
-    }
-
-    console.log("Exception fs.statSync (" + path + "): " + e);
-    throw e; // something else went wrong, we don't have rights, ...
-  }
 }

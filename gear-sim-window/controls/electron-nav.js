@@ -1,9 +1,10 @@
 angular.module('dnsim').component('electronNav', {
-  templateUrl: './electron-nav.html',
+  templateUrl: __dirname + '/electron-nav.html',
   controller: [
   '$location','translations','region','itemCategory','saveHelper',
   function($location,translations,region,itemCategory,saveHelper) {
     var ctrl = this;
+    var isReady = false;
     
     try {
       var noLocationMenu = [];
@@ -21,6 +22,14 @@ angular.module('dnsim').component('electronNav', {
         ];
         
       region.init();
+
+      ctrl.isReady = function() {
+        if(isReady) {
+          return true;
+        }
+        isReady = sessionStorage.getItem('dngearsim-electron-ready');
+        return isReady;
+      }
     
       ctrl.isSearch = function() {
         return $location.path().indexOf('/search') == 0;

@@ -1,8 +1,8 @@
 var path = require('path')
 var fs = require('fs');
-var colsToLoad = require('./colsToLoad');
-var itemTypes = require('./itemTypes');
-var DntReader = require('./dntreader');
+var colsToLoad = require('../preprocessor/colsToLoad');
+var itemTypes = require('../preprocessor/itemTypes');
+var DntReader = require('../preprocessor/dntreader');
 var LZString = require('lz-string');
 
 var colsToLoadLookup = null;

@@ -1,11 +1,11 @@
 const fs = require('fs');
 const {dialog} = require('electron').remote;
-const preProcessFunc = require('../preprocessor');
+const preProcessFunc = require('../../preprocessor');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
   templateUrl: __dirname + '/gearsim-setup.html',
-  controller: ['$window', '$timeout', 'region',
-  function($window, $timeout, region) {
+  controller: ['$window', '$timeout', 'region', 'dntreset', 'translations',
+  function($window, $timeout, region, dntreset, translations) {
     const ctrl = this;
     $window.document.title = 'dngearsim | SETUP';
 
@@ -57,6 +57,7 @@ angular.module('dnsim').component('dnsimElectronSetup', {
             if(versionIndex == 0) {
               ctrl.workingFolderStatus = 'found ' + versionString.toLowerCase();
               localStorage.setItem('workFolder', ctrl.workLocation);
+              sessionStorage.setItem('dngearsim-electron-ready', true);
             }
             else {
               ctrl.workingFolderStatus = 'cannot find processed files';
@@ -103,9 +104,17 @@ angular.module('dnsim').component('dnsimElectronSetup', {
     }
 
     ctrl.doProcessing = function() {
-        preProcessFunc(ctrl.dnLocation, ctrl.workLocation).then(() => {
+        ctrl.preProcessStatus = 'starting';
+        preProcessFunc(ctrl.dnLocation, ctrl.workLocation, (msg) => {
+          // this doesnt work.. need to find another way
+          ctrl.preProcessStatus = msg;
+          $timeout();
+        }).then(() => {
           ctrl.processing = false;
           ctrl.preProcessStatus = 'ready';
+          ctrl.validateWorking();
+          dntreset();
+          translations.reset();
           $timeout();
         });
     }

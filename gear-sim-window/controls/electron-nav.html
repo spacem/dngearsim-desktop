@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs" ng-if="$ctrl.isReady()">
   <li class="nav-tab nav-{{::action.name}}" ng-repeat="action in $ctrl.getActions() track by $index" ng-if="!$ctrl.noRegion()"> 
     <a class="list-group-item {{action.extraCss}}" ng-href="{{action.path}}">
       <span class="glyphicon glyphicon-{{::action.icon}}" ng-if="::action.icon" aria-hidden="true"></span>
