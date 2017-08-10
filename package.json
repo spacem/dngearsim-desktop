@@ -27,7 +27,6 @@
       "!setup-token.bat"
     ],
     "appId": "com.github.spacem.dngearsim-desktop",
-    "asar": false,
     "mac": {
       "category": "dragon-nest",
       "target": [
@@ -36,7 +35,7 @@
       ]
     },
     "nsis": {
-      "perMachine": true
+      "perMachine": false
     }
   }
 }
