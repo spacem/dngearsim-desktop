@@ -4,8 +4,8 @@ const preProcessFunc = require('../../preprocessor');
 
 angular.module('dnsim').component('dnsimElectronSetup', {
   templateUrl: __dirname + '/gearsim-setup.html',
-  controller: ['$window', '$timeout', 'region', 'dntreset', 'translations',
-  function($window, $timeout, region, dntreset, translations) {
+  controller: ['$window', '$timeout', 'region', 'dntReset', 'translations',
+  function($window, $timeout, region, dntReset, translations) {
     const ctrl = this;
     $window.document.title = 'dngearsim | SETUP';
 
@@ -113,7 +113,7 @@ angular.module('dnsim').component('dnsimElectronSetup', {
           ctrl.processing = false;
           ctrl.preProcessStatus = 'ready';
           ctrl.validateWorking();
-          dntreset();
+          dntReset();
           translations.reset();
           $timeout();
         });
