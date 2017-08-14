@@ -122,7 +122,12 @@
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+  let ElectronCookies = require('@exponent/electron-cookies');
+  ElectronCookies.enable({ origin: 'https://spacem.github.io/dngearsim-desktop/' });
+
   ga('create', 'UA-72901872-6', 'auto');
+  ga('set', 'location', 'https://spacem.github.io/dngearsim-desktop/');
+  ga('set', 'checkProtocolTask', null);
 </script>
 </body>
 

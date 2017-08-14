@@ -116,6 +116,16 @@ angular.module('dnsim').component('dnsimElectronSetup', {
           dntReset();
           translations.reset();
           $timeout();
+        }).catch((err) => {
+          console.log(err);
+          ctrl.processing = false;
+          if(err) {
+            ctrl.preProcessStatus = 'error' + err.message;
+          }
+          else {
+            ctrl.preProcessStatus = 'error' + err;
+          }
+          $timeout();
         });
     }
 

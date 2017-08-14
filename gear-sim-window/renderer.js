@@ -1,5 +1,3 @@
-require('electron-cookies');
-
 angular.module('dnsim').config(['$locationProvider', dnsimElectronHtml5Mode]);
 function dnsimElectronHtml5Mode ($locationProvider) {
     $locationProvider.html5Mode({

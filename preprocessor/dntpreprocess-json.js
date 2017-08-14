@@ -19,11 +19,13 @@ module.exports = async function preProcess(workingFolder) {
       processItemFile(workingFolder, filePath, potentialsToUse, enchantmentsToUse)
     });
     
+    /*
     // finally output other files
     console.log('writing other optimised files');
     walkSync(workingFolder, filePath => {
       processOtherFile(workingFolder, filePath, potentialsToUse, enchantmentsToUse)
     });
+    */
   }
   catch(ex) {
     console.log('--- ERROR --- ');
@@ -55,10 +57,12 @@ function processItemFile(outputFolder, filePath, potentialsToUse, enchantmentsTo
         
         var filtered = filterItemData(fileName + '.dnt', dntReader);
         // console.log(' filtered ' + dntReader.numRows + ' rows');
+        /*
         for(var i=0;i<dntReader.numRows;++i) {
           enchantmentsToUse[dntReader.getValue(i, 'EnchantID')] = true;
           potentialsToUse[dntReader.getValue(i, 'TypeParam1')] = true;
         }
+        */
         
         if((filtered || dntReader.colsToLoad)) {
           writeFileFromReader(dntReader, jsonFileName);
@@ -73,7 +77,11 @@ function processOtherFile(outputFolder, filePath, potentialsToUse, enchantmentsT
     if(isItemFile(fileName + '.dnt')) {
       return;
     }
-    
+
+    if(!isPartsFile(fileName) && !canRemoveStats(fileName)) {
+      return;
+    }
+
     var jsonFileName = outputFolder + '/' + fileName + '.optimised.json'
     if(filePath.indexOf('.json') == filePath.length - 5) {
       

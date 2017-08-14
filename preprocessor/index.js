@@ -7,6 +7,8 @@ var getItemsFunc = require('./getitems-json');
 
 module.exports = async function(sourceDir, workingDir, progressFunc) {
 
+    await checkDir(sourceDir);
+    await checkDir(workingDir);
 
     var start = new Date().getTime();
     var util = new PaksUtil(sourceDir, workingDir);
@@ -20,6 +22,7 @@ module.exports = async function(sourceDir, workingDir, progressFunc) {
         console.log('processUiStringFiles time ', (new Date().getTime() - start)/1000);
         start = new Date().getTime();
         var dnTranslations = new DnTranslations();
+        dnTranslations.sizeLimit = 200;
         return new Promise((resolve, reject) => {
             dnTranslations.process(buffer.toString(), function() {}, () => {
                 var data = JSON.stringify(dnTranslations.data);
@@ -60,6 +63,20 @@ module.exports = async function(sourceDir, workingDir, progressFunc) {
     progressFunc('copied version.cfg');
     console.log('version time ', (new Date().getTime() - start)/1000);
 }
+
+function checkDir(dir) {
+    return new Promise((resolve, reject) => {
+        fs.exists(dir, (exists) => {
+            if(!exists) {
+                reject(new Error(dir + ' not found'))
+            }
+            else {
+                resolve();
+            }
+        });
+    });
+}
+
 
 async function writeRawDntAsJson(workingDir, fileName, buffer) {
     var dntReader = new DntReader();
