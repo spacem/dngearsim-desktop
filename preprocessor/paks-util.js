@@ -31,11 +31,15 @@ module.exports = class PakUtil {
                     var p = Promise.all(promises);
                     p = p.then(() => {
                         this.indexByPakFile();
-                        resolve();
+                        resolve(this.getStatus());
                     }).catch(reject);
                 }
             });
         });
+    }
+
+    getStatus() {
+        return 'found ' + Object.keys(this.fileMap).length + ' files inside the paks';
     }
 
     processDntFiles(processFunc) {
