@@ -8,6 +8,8 @@ const fs = require('fs');
 var PaksUtil = require('../preprocessor/paks-util');
 var DnTranslations = require('../preprocessor/dntranslations');
 var DntReader = require('../preprocessor/dntreader');
+const path = require('path');
+const url = require('url');
 
 module.exports = class GearSimWindow {
     open() {
@@ -144,17 +146,19 @@ module.exports = class GearSimWindow {
         if (this.mainWindow) {
             // and load the index.html of the app.
             this.mainWindow.loadURL(
-                'http://localhost:4200/desktop-setup'
+                'https://dngearsim.netlify.com/desktop-setup'
             );
         }
     }
 
-    setup() {
+    legacy() {
         if (this.mainWindow) {
             // and load the index.html of the app.
-            this.mainWindow.loadURL(
-                'dngearsim://action/select-file?filename=x'
-            );
+            this.mainWindow.loadURL(url.format({
+                pathname: path.join(__dirname, 'legacy-dngearsim.html'),
+                protocol: 'file:',
+                slashes: true
+            }));
         }
     }
 
@@ -173,9 +177,9 @@ module.exports = class GearSimWindow {
                     }
                 },
                 {
-                    label: 'Setup',
+                    label: 'Legacy Version',
                     click() {
-                        t.setup();
+                        t.legacy();
                     }
                 },
                 {
