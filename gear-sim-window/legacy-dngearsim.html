@@ -7,7 +7,7 @@
 <meta name="description" content="Desktop edition of the Dragon Nest gear simulator.">
 <link rel="icon" type="image/png" href="https://spacem.github.io/dngearsim/images/dngearsim_icon.png">
 
-<title>dngearsim-desktop: dragon nest gear simulator - desktop edition</title>
+<title>dngearsim-desktop: dragon nest gear simulator - legacy desktop edition</title>
 
 <script>
   'use strict';
@@ -65,9 +65,17 @@
 </div>
 <dngearsim-header></dngearsim-header>
 <div id="nav" class="container">
-  <div class="row">
-    <electron-nav></electron-nav>
-  </div>
+  <ul class="nav nav-tabs" ng-if="!noRegion()">
+    <li class="nav-tab nav-builds"> 
+        <a class="list-group-item" href="#!/builds">
+        <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+        &nbsp;
+        <span class="hidden-xs">
+        builds
+        </span>
+        </a>
+    </li>
+  </ul>
   <div class="row">
     <div class="col-xs-12 dnsim-fade" id="app" ng-view autoscroll="true">
       <br />
@@ -103,15 +111,17 @@
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"></script>
+
 <div class="dngearsim-background-image hidden-xs">
 </div>
 
 <script src="https://spacem.github.io/dngearsim/min/libs.min.js"></script>
-<script>
-    DntReader = require('./dntreader-swap.js');
-    DnTranslations = require('./translations-swap.js');
-</script>
-
+<script src="https://spacem.github.io/dngearsim/min/dntviewer.min.js"></script>
 <script src="https://spacem.github.io/dngearsim/app.js"></script>
 <script src="https://spacem.github.io/dngearsim/min/templates.min.js"></script>
 <script src="https://spacem.github.io/dngearsim/min/app.min.js"></script>
@@ -128,12 +138,15 @@
   ga('create', 'UA-72901872-6', 'auto');
   ga('set', 'location', 'https://spacem.github.io/dngearsim-desktop/');
   ga('set', 'checkProtocolTask', null);
+
+  angular.module('dnsim').config(['$locationProvider', dnsimElectronHtml5Mode]);
+    function dnsimElectronHtml5Mode ($locationProvider) {
+        $locationProvider.html5Mode({
+        enabled: false,
+        requireBase: false,
+        rewriteLinks: true});
+    }
 </script>
 </body>
 
-  <script>
-    require('./renderer.js');
-    require('./controls/electron-nav.js');
-    require('./controls/gearsim-setup.js');
-  </script>
 </html>
