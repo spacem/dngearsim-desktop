@@ -53,6 +53,9 @@ module.exports = class GetFileAction {
                 'NameID' in dntReader.columnIndexes && 
                 'Type' in dntReader.columnIndexes && 
                 'IconImageIndex' in dntReader.columnIndexes) {
+
+                  const useFileName = fileName.replace('.dnt', '');
+                  console.log('processing file' + useFileName);
             
                   for(var i=0;i<dntReader.numRows;++i) {
                     var id = dntReader.getValue(i, 'id');
@@ -64,7 +67,7 @@ module.exports = class GetFileAction {
                       dntReader.getValue(i, 'IconImageIndex'),
                       dntReader.getValue(i, 'Type'),
                       dntReader.getValue(i, 'LevelLimit'),
-                      fileName
+                      useFileName
                     ]);
                   }
             }
