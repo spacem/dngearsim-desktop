@@ -4,13 +4,11 @@ var zlib = require('zlib');
 
 module.exports = class PakUtil {
 
-    constructor(sourceDir, destDir) {
+    constructor(sourceDir) {
         this.sourceDir = sourceDir;
-        this.destDir = destDir;
         this.fileMap = {};
         this.pakFileContents = {};
         this.fileFilters = ['.dnt', 'uistring.xml'];
-        var reusableBuffers = [];
     }
 
     loadFiles() {
@@ -48,11 +46,6 @@ module.exports = class PakUtil {
 
     processUiStringFiles(processFunc) {
         return this.processFiles('uistring.xml', processFunc);
-    }
-
-    async extractFiles() {
-        await this.processDntFiles((fileName, buffer) => this.writeFile(fileName, buffer));
-        await this.processUiStringFiles((fileName, buffer) => this.writeFile(fileName, buffer));
     }
 
     processFiles(fileFilter, processFunc) {
@@ -167,9 +160,7 @@ module.exports = class PakUtil {
     async extractFile(fd, fileName, offset, size, zsize, processFunc) {
         const pathChunks = fileName.split('\\');
         const fileOnlyName = pathChunks[pathChunks.length-1];
-        var fileName = this.destDir + '\\' + fileOnlyName;
 
-        await this.removeExisting(fileName);
         let buffer;
         if(zsize > 0) {
             let useBuffer = new Buffer(zsize);
@@ -189,35 +180,7 @@ module.exports = class PakUtil {
             buffer = await this.readChunk(fd, offset, size, new Buffer(size));
         }
 
-        return await processFunc(fileName, buffer);
-    }
-
-    writeFile(fileName, buffer) {
-        return new Promise((resolve, reject) => {
-            fs.open(fileName, 'w', (err, destFd) => {
-                fs.write(destFd, buffer, 0, buffer.length, 0, (err, written, newBuffer) => {
-                    if(err) {
-                        reject(err);
-                    }
-                    else {
-                        fs.close(destFd, resolve);
-                    }
-                });
-            });
-        });
-    }
-
-    removeExisting(fileName) {
-        return new Promise((resolve, rejecct) => {
-            fs.exists(fileName, exists => {
-                if(exists) {
-                    fs.unlink(fileName, resolve);
-                }
-                else {
-                    resolve();
-                }
-            });
-        });
+        return await processFunc(fileOnlyName, buffer);
     }
         
     readChunk(fd, position, length, startingBuffer) {
